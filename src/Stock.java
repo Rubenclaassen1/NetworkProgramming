@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 
 
-public class Stock implements CardStack{
+public abstract class Stock implements CardStack{
     private Point2D position;
     private Queue<Card> stockCards;
 
@@ -12,22 +12,20 @@ public class Stock implements CardStack{
         this.stockCards = stockCards;
     }
 
-    @Override
+    public abstract void AddCard(Card card);
+
     public void SetPositition(Point2D position) {
         this.position = position;
     }
 
-    @Override
-    public void AddCard(Card card) {
+    public void removeCard() {
 
     }
 
-    @Override
     public Point2D GetPostition() {
         return this.position;
     }
 
-    @Override
     public Queue getCards() {
         return this.stockCards;
     }
