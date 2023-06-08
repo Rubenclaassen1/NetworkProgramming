@@ -42,11 +42,20 @@ public class Card {
     public Color getCardColor() {
         return cardColor;
     }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "value=" + value +
+                ", type=" + type +
+                '}';
+    }
 }
 enum Type{
-    HEARTS,
+
     CLUBS,
     SPADES,
+    HEARTS,
     DIAMONDS;
 }
 enum Color{
