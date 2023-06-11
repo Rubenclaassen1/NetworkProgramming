@@ -22,5 +22,10 @@ public class Foundation extends Stock{
         }
     }
 
-
+    @Override
+    public String toString() {
+        return "Foundation{" +
+                "type=" + type +
+                '}';
+    }
 }

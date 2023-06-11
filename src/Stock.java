@@ -4,7 +4,7 @@ import java.util.Queue;
 import java.util.Stack;
 
 
-public abstract class Stock implements CardStack{
+public abstract class Stock{
     private Point2D position;
     private Stack<Card> stockCards;
 

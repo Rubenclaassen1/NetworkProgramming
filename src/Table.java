@@ -27,8 +27,14 @@ public class Table {
                 deck.add(new Card(j, Type.values()[i], Color.values()[(i / 2)], false, null));
             }
         }
+        for (Card card : deck) {
+            System.out.println(card);
+        }
     }
     private void fillStocks(){
+        for (int i = 0; i < foundations.length; i++) {
+            foundations[i] = new Foundation(null, new Stack<>(), Type.values()[i]);
+        }
         for (int i = 0; i < rows.length; i++) {
             Stack<Card> cardStack = new Stack<>();
             cardStack.addAll(deck.subList(0,i+1));
@@ -36,6 +42,7 @@ public class Table {
             rows[i] = new Row(null,cardStack);
         }
         stock = new Pile(null,deck);
+
     }
 
 
