@@ -1,12 +1,12 @@
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Queue;
+import java.util.Stack;
 
 public interface CardStack {
-    void SetPositition(Point2D position);
-    void AddCard(Card card);
-    Point2D GetPostition();
-    Queue<Card> getCards();
+    void setPositition(Point2D position);
+    void addCard(Card card);
+    Point2D getPostition();
+    Stack<Card> getCards();
 
 
 

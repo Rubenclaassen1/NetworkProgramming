@@ -48,6 +48,8 @@ public class Card {
         return "Card{" +
                 "value=" + value +
                 ", type=" + type +
+                ", cardColor=" + cardColor +
+                ", showing=" + showing +
                 '}';
     }
 }
