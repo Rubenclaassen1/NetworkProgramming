@@ -9,6 +9,9 @@ public class Row extends Stock {
     public Row(Point2D position, Stack<Card> stockCards) {
         super(position, stockCards);
         super.getCards().peek().setShowing(true);
+        for (int i = 0; i < stockCards.size(); i++) {
+            super.getCards().get(i).setPosition(new Point2D.Double(position.getX(),position.getY()+50*i));
+        }
     }
 
 

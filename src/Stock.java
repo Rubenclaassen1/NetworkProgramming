@@ -15,6 +15,7 @@ public abstract class Stock{
 
     public abstract void addCard(Card card);
 
+
     public void setPositition(Point2D position) {
         this.position = position;
     }

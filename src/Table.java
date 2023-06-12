@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.Stack;
 
@@ -9,8 +10,8 @@ public class Table {
     private Pile pile;
     private Foundation[] foundations = new Foundation[4];
 
-    public Table() {
-        generateCards();
+    public Table(BufferedImage[] cards) {
+        generateCards(cards);
         shuffle();
         fillStocks();
     }
@@ -20,11 +21,13 @@ public class Table {
         Collections.shuffle(deck);
     }
 
-    private void generateCards() {
+    private void generateCards(BufferedImage[] cards) {
+        int counter = 0;
         deck = new Stack<>();
         for (int i = 0; i < 4; i++) {
             for (int j = 1; j < 14; j++) {
-                deck.add(new Card(j, Type.values()[i], Color.values()[(i / 2)], false, null));
+                deck.add(new Card(j, Type.values()[i], CardColor.values()[(i / 2)], false, null,cards[counter]));
+                counter++;
             }
         }
         for (Card card : deck) {
@@ -32,17 +35,19 @@ public class Table {
         }
     }
     private void fillStocks(){
+        Stack<Card> dealingDeck = new Stack<>();
+        dealingDeck.addAll(deck);
         for (int i = 0; i < foundations.length; i++) {
             foundations[i] = new Foundation(null, new Stack<>(), Type.values()[i]);
         }
         for (int i = 0; i < rows.length; i++) {
             Stack<Card> cardStack = new Stack<>();
-            cardStack.addAll(deck.subList(0,i+1));
-            deck.subList(0,i+1).clear();
-            rows[i] = new Row(null,cardStack);
+            cardStack.addAll(dealingDeck.subList(0,i+1));
+            dealingDeck.subList(0,i+1).clear();
+            rows[i] = new Row(new Point2D.Float(110*i + 100,200 ),cardStack);
         }
-        stock = new Pile(null,deck);
-
+        stock = new Pile(null,dealingDeck);
+        System.out.println(deck.size());
     }
 
 

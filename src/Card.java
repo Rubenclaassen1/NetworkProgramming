@@ -1,19 +1,28 @@
+
+import org.jfree.fx.FXGraphics2D;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.util.Enumeration;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 public class Card {
     private final int value;
     private final Type type;
-    private final Color cardColor;
+    private final CardColor cardColor;
     private boolean showing;
     private Point2D position;
+    private BufferedImage cardImage;
 
-    public Card(int value, Type type, Color cardColor, boolean showing, Point2D position) {
+
+    public Card(int value, Type type, CardColor cardColor, boolean showing, Point2D position, BufferedImage card) {
         this.value = value;
         this.type = type;
         this.cardColor = cardColor;
         this.showing = showing;
         this.position = position;
+        this.cardImage = card;
     }
 
     public Point2D getPosition() {
@@ -39,7 +48,7 @@ public class Card {
         return type;
     }
 
-    public Color getCardColor() {
+    public CardColor getCardColor() {
         return cardColor;
     }
 
@@ -52,15 +61,31 @@ public class Card {
                 ", showing=" + showing +
                 '}';
     }
+    public void draw(FXGraphics2D graphics2D){
+        AffineTransform fx = new AffineTransform();
+        Shape card = new Rectangle2D.Double(position.getX(), position.getY(), 100, 150);
+        if(!showing){
+            graphics2D.setColor(Color.BLUE);
+            graphics2D.fill(card);
+        } else {
+            graphics2D.setColor(Color.white);
+            graphics2D.fill(card);
+            fx.translate(position.getX(), position.getY());
+           graphics2D.drawImage(cardImage,fx,null);
+        }
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.draw(card);
+
+    }
 }
 enum Type{
 
     CLUBS,
     SPADES,
-    HEARTS,
-    DIAMONDS;
+    DIAMONDS,
+    HEARTS;
 }
-enum Color{
+enum CardColor {
     BLACK,
     RED;
 }
