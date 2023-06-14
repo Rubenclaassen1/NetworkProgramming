@@ -5,7 +5,7 @@ import java.util.*;
 public class Main {
     private static Table table;
     public static void main(String[] args) {
-        table = new Table(null);
+        table = new Table(null, null);
 
         System.out.println("Stock: " + table.getStock());
         System.out.println("Pile: " + table.getPile());

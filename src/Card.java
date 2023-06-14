@@ -8,12 +8,15 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class Card {
+    public final int CARD_WIDTH = 100;
+    public final int CARD_HEIGHT = 150;
     private final int value;
     private final Type type;
     private final CardColor cardColor;
     private boolean showing;
     private Point2D position;
     private BufferedImage cardImage;
+
 
 
     public Card(int value, Type type, CardColor cardColor, boolean showing, Point2D position, BufferedImage card) {
@@ -83,10 +86,10 @@ enum Type{
     CLUBS,
     SPADES,
     DIAMONDS,
-    HEARTS;
+    HEARTS
 }
 enum CardColor {
     BLACK,
-    RED;
+    RED
 }
 
