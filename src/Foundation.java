@@ -7,10 +7,9 @@ import java.awt.image.BufferedImage;
 import java.util.Queue;
 import java.util.Stack;
 
-public class Foundation extends Stock{
+public class Foundation extends Stock {
     private Type type;
     private BufferedImage foundation;
-
 
 
     public Foundation(Point2D position, Stack<Card> stockCards, Type type, BufferedImage foundation) {
@@ -21,13 +20,16 @@ public class Foundation extends Stock{
     }
 
     @Override
-    public void addCard(Card card) {
-        if(card.getType() == type && card.getValue() == super.getCards().size() +1){
-            card.setPosition(super.getPostition());
-            super.getCards().add(card);
-        }else{
-            System.out.println("Is niet de juiste kaart");
+    public boolean addCard(Stack<Card> cards) {
+        if (cards.size() == 1) {
+            if (cards.get(0).getType() == type && cards.get(0).getValue() == super.getCards().size() + 1) {
+                cards.get(0).setPosition(super.getPostition());
+                super.getCards().add(cards.get(0));
+                return true;
+            }
         }
+        return false;
+
     }
 
     @Override
@@ -39,15 +41,15 @@ public class Foundation extends Stock{
 
     public void draw(FXGraphics2D graphics2D) {
         int stacksize = super.getCards().size();
-        if(super.getCards().isEmpty()){
+        if (super.getCards().isEmpty()) {
             AffineTransform fx = new AffineTransform();
             fx.translate(super.getPostition().getX(), super.getPostition().getY());
             graphics2D.drawImage(foundation, fx, null);
-        } else if (stacksize >=2){
-            super.getCards().get(stacksize-1).draw(graphics2D);
+        } else if (stacksize >= 2) {
+            super.getCards().get(stacksize - 1).draw(graphics2D);
             super.getCards().get(stacksize).draw(graphics2D);
 
-        } else{
+        } else {
             super.getCards().get(stacksize).draw(graphics2D);
         }
 

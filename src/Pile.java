@@ -7,9 +7,14 @@ public class Pile extends Stock{
     }
 
     @Override
-    public void addCard(Card card) {
-        card.setShowing(true);
-        super.getCards().add(card);
+    public boolean addCard(Stack<Card> cards) {
+        if (cards.size()==1){
+
+            cards.get(0).setShowing(true);
+            super.getCards().add(cards.get(0));
+            return true;
+        }
+        return false;
     }
     public Stack<Card> reset(){
         for (Card card : super.getCards()) {

@@ -13,7 +13,7 @@ public abstract class Stock{
         this.stockCards = stockCards;
     }
 
-    public abstract void addCard(Card card);
+    public abstract boolean addCard(Stack<Card> card);
 
 
 

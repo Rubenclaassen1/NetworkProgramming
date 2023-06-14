@@ -10,6 +10,7 @@ import org.jfree.fx.FXGraphics2D;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
@@ -38,21 +39,37 @@ public class Gui extends Application {
 
     }
 
-    private Card selectedCard;
+    private Stack<Card> selectedCards = new Stack<Card>();
+    private Stock previousStock;
+    private double Xoffset;
+    private double Yoffset;
 
-    private void onMouseDrag(MouseEvent event) {
+    private void onMouseDrag(MouseEvent mouse) {
+        if(selectedCards.isEmpty()) {return;}
+        System.out.println("Kanker");
 
+        for (int i = 0; i < selectedCards.size() ; i++) {
+            selectedCards.get(i).setPosition(new Point2D.Double(mouse.getX()-Xoffset,(mouse.getY()-Yoffset)+(50*i)));
+        }
+        draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
     }
 
-    private void onMouseRelease(MouseEvent event) {
-
+    private void onMouseRelease(MouseEvent mouse) {
+        Stock closestStock = getClosestStock(mouse);
+        if(!closestStock.addCard(selectedCards)){
+            previousStock.addCard(selectedCards);
+        }
+        selectedCards.clear();
+        draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
     }
 
     private void onMousePressed(MouseEvent mouse) {
-        Stock closestStock = getClosestStock(mouse);
-        if (closestStock.getClass().equals(Row.class)) {
-            Row closestRow = (Row)closestStock;
-            closestRow.removeCard(closestRow.getSelectedCard(mouse));
+        previousStock = getClosestStock(mouse);
+        if (previousStock.getClass().equals(Row.class)) {
+            Row closestRow = (Row)previousStock;
+            selectedCards = closestRow.removeCard(closestRow.getSelectedCard(mouse));
+            Xoffset = mouse.getX() -selectedCards.firstElement().getPosition().getX();
+            Yoffset = mouse.getY() -selectedCards.firstElement().getPosition().getY();
             System.out.println(closestRow.getCards());
         }
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
@@ -139,6 +156,9 @@ public class Gui extends Application {
         }
         for (Foundation foundation : table.getFoundations()) {
             foundation.draw(graphics2D);
+        }
+        for (Card selectedCard : selectedCards) {
+            selectedCard.draw(graphics2D);
         }
     }
 

@@ -39,7 +39,7 @@ public class Table {
         Stack<Card> dealingDeck = new Stack<>();
         dealingDeck.addAll(deck);
         for (int i = 0; i < foundations.length; i++) {
-            foundations[i] = new Foundation(new Point2D.Double(500*i+150,50), new Stack<>(), Type.values()[i], foundation[i]);
+            foundations[i] = new Foundation(new Point2D.Double(800+i*150,50), new Stack<>(), Type.values()[i], foundation[i]);
         }
         for (int i = 0; i < rows.length; i++) {
             Stack<Card> cardStack = new Stack<>();
