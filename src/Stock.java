@@ -17,7 +17,7 @@ public abstract class Stock{
 
 
 
-    public void setPositition(Point2D position) {
+    public void setPosition(Point2D position) {
         this.position = position;
     }
 

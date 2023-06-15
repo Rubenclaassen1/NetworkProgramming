@@ -3,8 +3,10 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.jfree.fx.FXGraphics2D;
+import org.jfree.fx.ResizableCanvas;
 
 
 import javax.imageio.ImageIO;
@@ -19,20 +21,26 @@ public class Gui extends Application {
     private static Table table;
     private Canvas canvas;
 
+
     @Override
     public void start(Stage stage) throws Exception {
+
         table = new Table(loadImage(), loadFoundationImage());
         for (Row row : table.getRows()) {
             System.out.println("Row " + ": " + row);
         }
-        canvas = new Canvas(1920, 1200);
+        BorderPane mainPane = new BorderPane();
+        canvas = new ResizableCanvas(g -> draw(g), mainPane);
+        mainPane.setCenter(canvas);
+        stage.setMinWidth(945);
+        stage.setMinHeight(930);
         canvas.setOnMousePressed(event -> onMousePressed(event));
         canvas.setOnMouseReleased(event -> {if(previousStock != null && !selectedCards.isEmpty())onMouseRelease(event);});
         canvas.setOnMouseDragged(event -> onMouseDrag(event));
-        stage.setMaximized(true);
-        stage.setScene(new Scene(new Group(canvas)));
+//        stage.setMaximized(true);
+        stage.setScene(new Scene(mainPane));
         stage.setTitle("Solitaire");
-        draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+
         stage.show();
 
     }
@@ -113,47 +121,7 @@ public class Gui extends Application {
         }
         return closestStock;
     }
-//        }
-//        if (table.getRows()[0].getPosition().getY() > mouse.getY()) {
-//
-//            distance = table.getReserve().getPosition().distance(mouse.getX(), mouse.getY());
-//            if (distance < closestDistance) {
-//                if(table.getReserve().getPosition().getX() + 100 < mouse.getX() || table.getReserve().getPosition().getX() > mouse.getX()) {
-//                    closestDistance = distance;
-//                    closestStock = table.getReserve();
-//                }
-//            }
-//            distance = table.getPile().getPosition().distance(mouse.getX(), mouse.getY());
-//            if (distance < closestDistance) {
-//                if(table.getPile().getPosition().getX() + 100 < mouse.getX() || table.getPile().getPosition().getX() > mouse.getX()) {
-//                    closestDistance = distance;
-//                    closestStock = table.getReserve();
-//                }
-//            }
-//            for (Foundation foundation : table.getFoundations()) {
-//                if (foundation.getPosition().getX() + 100 < mouse.getX() || foundation.getPosition().getX() > mouse.getX()) {
-//                    continue;
-//                }
-//                distance = foundation.getPosition().distance(mouse.getX(), mouse.getY());
-//                if (distance < closestDistance) {
-//                    closestDistance = distance;
-//                    closestStock = foundation;
-//                }
-//            }
-//        } else {
-//            for (Row row : table.getRows()) {
-//                if (row.getPosition().getX() + 100 < mouse.getX() || row.getPosition().getX() > mouse.getX()) {
-//                    continue;
-//                }
-//
-//                distance = row.getPosition().distance(mouse.getX(), mouse.getY());
-//                if (distance < closestDistance) {
-//                    closestDistance = distance;
-//                    closestStock = row;
-//                }
-//            }
-//        }
-//        return closestStock;
+
 
 
     public void update() {

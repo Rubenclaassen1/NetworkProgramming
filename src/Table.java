@@ -41,16 +41,16 @@ public class Table {
         Stack<Card> dealingDeck = new Stack<>();
         dealingDeck.addAll(deck);
         for (int i = 0; i < foundations.length; i++) {
-            foundations[i] = new Foundation(new Point2D.Double(580+i*150,50), new Stack<>(), Type.values()[i], foundationImage[i]);
+            foundations[i] = new Foundation(new Point2D.Double(355+i*150,25), new Stack<>(), Type.values()[i], foundationImage[i]);
         }
         for (int i = 0; i < rows.length; i++) {
             Stack<Card> cardStack = new Stack<>();
             cardStack.addAll(dealingDeck.subList(0,i+1));
             dealingDeck.subList(0,i+1).clear();
-            rows[i] = new Row(new Point2D.Float(130*i +250,250 ),cardStack);
+            rows[i] = new Row(new Point2D.Float(130*i +25,200 ),cardStack);
         }
-        reserve = new Pile(new Point2D.Double(250,50),dealingDeck);
-        pile = new Pile(new Point2D.Double(360,50),new Stack<Card>());
+        reserve = new Pile(new Point2D.Double(25,25),dealingDeck);
+        pile = new Pile(new Point2D.Double(155,25),new Stack<Card>());
         System.out.println(deck.size());
 
         allStocks.add(reserve);
