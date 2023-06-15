@@ -27,7 +27,7 @@ public class Gui extends Application {
         }
         canvas = new Canvas(1920, 1200);
         canvas.setOnMousePressed(event -> onMousePressed(event));
-        canvas.setOnMouseReleased(event -> {if(previousStock != null)onMouseRelease(event);});
+        canvas.setOnMouseReleased(event -> {if(previousStock != null && !selectedCards.isEmpty())onMouseRelease(event);});
         canvas.setOnMouseDragged(event -> onMouseDrag(event));
         stage.setMaximized(true);
         stage.setScene(new Scene(new Group(canvas)));
@@ -88,8 +88,10 @@ public class Gui extends Application {
             }else{
                 selectedCards.add(previousStock.getCards().pop());
             }
-            Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
-            Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
+            if(!selectedCards.isEmpty()) {
+                Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
+                Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
+            }
         }
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
 
@@ -100,6 +102,7 @@ public class Gui extends Application {
         Stock closestStock = null;
         double distance;
         for (Stock stock : table.getAllStocks()) {
+            if(stock.getClass().equals(Row.class) &&  stock.getPosition().getY()> mouse.getY() || stock.getPosition().getY() + (stock.getCards().size()-1)*50 +150 < mouse.getY())continue;
             if (stock.getPosition().getX() + 100 < mouse.getX() || stock.getPosition().getX() > mouse.getX()) {continue;}
 
             distance = stock.getPosition().distance(mouse.getX(), mouse.getY());

@@ -23,7 +23,6 @@ public class Row extends Stock {
 
 
     public boolean addCard(Stack<Card> stackCards) {
-
         Card firstCard = stackCards.firstElement();
         Stack<Card> superStack = super.getCards();
         if (superStack.isEmpty() && firstCard.getValue() != 13) {
@@ -53,17 +52,17 @@ public class Row extends Stock {
     }
 
     public Stack<Card> removeCard(Card card){
+        Stack<Card> cardStack = new Stack<>();
         if(card.isShowing()){
-            Stack<Card> cardStack = new Stack<>();
             cardStack.addAll(super.getCards().subList( super.getCards().size()-super.getCards().search(card),super.getCards().size()));
             System.out.println(super.getCards().search(card));
             System.out.println(cardStack);
             super.getCards().subList( super.getCards().size()-super.getCards().search(card),super.getCards().size()).clear();
 
-            return cardStack;
         }
-        System.out.println("no cards shown");
-        return null;
+        return cardStack;
+//        System.out.println("no cards shown");
+//        return null;
 
     }
     public void showLast(){

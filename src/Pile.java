@@ -1,4 +1,5 @@
 import java.awt.geom.Point2D;
+import java.util.Collections;
 import java.util.Stack;
 
 public class Pile extends Stock{
@@ -43,6 +44,7 @@ public class Pile extends Stock{
         Stack<Card> cardStack = new Stack<>();
         cardStack.addAll(super.getCards());
         super.getCards().clear();
+        Collections.reverse(cardStack);
         return cardStack;
     }
 
