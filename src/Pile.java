@@ -3,19 +3,39 @@ import java.util.Stack;
 
 public class Pile extends Stock{
     public Pile(Point2D position, Stack<Card> stockCards) {
+
         super(position, stockCards);
+        for (Card stockCard : stockCards) {
+            stockCard.setPosition(position);
+        }
     }
 
     @Override
     public boolean addCard(Stack<Card> cards) {
-        if (cards.size()==1){
-
-            cards.get(0).setShowing(true);
-            super.getCards().add(cards.get(0));
-            return true;
+        if(cards.isEmpty()) return false;
+        for (Card card : cards) {
+            card.setShowing(false);
         }
-        return false;
+        super.getCards().addAll(cards);
+        return true;
     }
+
+
+    public void addCard(Card card) {
+        card.setShowing(true);
+        card.setPosition(super.getPosition());
+        super.getCards().add(card);
+    }
+
+    @Override
+    public void resetCard(Stack<Card> cards) {
+        for (Card card : cards) {
+            card.setPosition(super.getPosition());
+        }
+
+        super.getCards().addAll(cards);
+    }
+
     public Stack<Card> reset(){
         for (Card card : super.getCards()) {
             card.setShowing(false);
@@ -25,4 +45,6 @@ public class Pile extends Stock{
         super.getCards().clear();
         return cardStack;
     }
+
+
 }

@@ -9,9 +9,7 @@ import org.jfree.fx.FXGraphics2D;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 import java.util.Stack;
@@ -29,7 +27,7 @@ public class Gui extends Application {
         }
         canvas = new Canvas(1920, 1200);
         canvas.setOnMousePressed(event -> onMousePressed(event));
-        canvas.setOnMouseReleased(event -> onMouseRelease(event));
+        canvas.setOnMouseReleased(event -> {if(previousStock != null)onMouseRelease(event);});
         canvas.setOnMouseDragged(event -> onMouseDrag(event));
         stage.setMaximized(true);
         stage.setScene(new Scene(new Group(canvas)));
@@ -39,75 +37,121 @@ public class Gui extends Application {
 
     }
 
+
+
     private Stack<Card> selectedCards = new Stack<Card>();
     private Stock previousStock;
     private double Xoffset;
     private double Yoffset;
 
     private void onMouseDrag(MouseEvent mouse) {
-        if(selectedCards.isEmpty()) {return;}
-        System.out.println("Kanker");
-
-        for (int i = 0; i < selectedCards.size() ; i++) {
-            selectedCards.get(i).setPosition(new Point2D.Double(mouse.getX()-Xoffset,(mouse.getY()-Yoffset)+(50*i)));
+        if(selectedCards.isEmpty()) return;
+        // System.out.println("Kanker");
+        for (int i = 0; i < selectedCards.size(); i++) {
+            selectedCards.get(i).setPosition(new Point2D.Double(mouse.getX() - Xoffset, (mouse.getY() - Yoffset) + (50 * i)));
         }
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
     }
 
     private void onMouseRelease(MouseEvent mouse) {
         Stock closestStock = getClosestStock(mouse);
-        if(!closestStock.addCard(selectedCards)){
-            previousStock.addCard(selectedCards);
+
+        System.out.println(closestStock);
+        if ( closestStock == null || closestStock.getClass().equals(Pile.class)||!closestStock.addCard(selectedCards)) {
+            System.out.println("return card to previous");
+                previousStock.resetCard(selectedCards);
+        } else if (previousStock.getClass().equals(Row.class)) {
+                ((Row) previousStock).showLast();
         }
         selectedCards.clear();
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
     }
 
+
     private void onMousePressed(MouseEvent mouse) {
         previousStock = getClosestStock(mouse);
-        if (previousStock.getClass().equals(Row.class)) {
-            Row closestRow = (Row)previousStock;
-            selectedCards = closestRow.removeCard(closestRow.getSelectedCard(mouse));
-            Xoffset = mouse.getX() -selectedCards.firstElement().getPosition().getX();
-            Yoffset = mouse.getY() -selectedCards.firstElement().getPosition().getY();
-            System.out.println(closestRow.getCards());
+        if(previousStock == null) {
+            return;
+        }
+
+        if (getClosestStock(mouse) == table.getReserve()) {
+            if(table.getReserve().getCards().isEmpty()){
+                table.getReserve().resetCard(table.getPile().reset());
+            }else {
+                table.getPile().addCard(table.getReserve().removeCard());
+            }
+        }else {
+            if (previousStock.getClass().equals(Row.class)) {
+                Row closestRow = (Row) previousStock;
+                selectedCards = closestRow.removeCard(closestRow.getSelectedCard(mouse));
+                System.out.println(closestRow.getCards());
+            }else{
+                selectedCards.add(previousStock.getCards().pop());
+            }
+            Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
+            Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
         }
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
-
 
     }
 
     private Stock getClosestStock(MouseEvent mouse) {
-        double closestDistance = table.getPile().getPostition().distance(mouse.getX(), mouse.getY());
-        Stock closestStock = table.getPile();
+        double closestDistance = 10000;
+        Stock closestStock = null;
         double distance;
-        if (table.getRows()[0].getPostition().getY() > mouse.getY()) {
-            distance = table.getStock().getPostition().distance(mouse.getX(), mouse.getY());
+        for (Stock stock : table.getAllStocks()) {
+            if (stock.getPosition().getX() + 100 < mouse.getX() || stock.getPosition().getX() > mouse.getX()) {continue;}
+
+            distance = stock.getPosition().distance(mouse.getX(), mouse.getY());
             if (distance < closestDistance) {
                 closestDistance = distance;
-                closestStock = table.getStock();
-            }
-            for (Foundation foundation : table.getFoundations()) {
-                if (foundation.getPostition().getX() + 100 < mouse.getX() || foundation.getPostition().getX() > mouse.getX()) {continue;}
-                distance = foundation.getPostition().distance(mouse.getX(), mouse.getY());
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestStock = foundation;
-                }
-            }
-        } else {
-            for (Row row : table.getRows()) {
-                if (row.getPostition().getX() + 100 < mouse.getX() || row.getPostition().getX() > mouse.getX()) {continue;}
-
-                distance = row.getPostition().distance(mouse.getX(), mouse.getY());
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestStock = row;
-                }
+                closestStock = stock;
             }
         }
         return closestStock;
     }
+//        }
+//        if (table.getRows()[0].getPosition().getY() > mouse.getY()) {
+//
+//            distance = table.getReserve().getPosition().distance(mouse.getX(), mouse.getY());
+//            if (distance < closestDistance) {
+//                if(table.getReserve().getPosition().getX() + 100 < mouse.getX() || table.getReserve().getPosition().getX() > mouse.getX()) {
+//                    closestDistance = distance;
+//                    closestStock = table.getReserve();
+//                }
+//            }
+//            distance = table.getPile().getPosition().distance(mouse.getX(), mouse.getY());
+//            if (distance < closestDistance) {
+//                if(table.getPile().getPosition().getX() + 100 < mouse.getX() || table.getPile().getPosition().getX() > mouse.getX()) {
+//                    closestDistance = distance;
+//                    closestStock = table.getReserve();
+//                }
+//            }
+//            for (Foundation foundation : table.getFoundations()) {
+//                if (foundation.getPosition().getX() + 100 < mouse.getX() || foundation.getPosition().getX() > mouse.getX()) {
+//                    continue;
+//                }
+//                distance = foundation.getPosition().distance(mouse.getX(), mouse.getY());
+//                if (distance < closestDistance) {
+//                    closestDistance = distance;
+//                    closestStock = foundation;
+//                }
+//            }
+//        } else {
+//            for (Row row : table.getRows()) {
+//                if (row.getPosition().getX() + 100 < mouse.getX() || row.getPosition().getX() > mouse.getX()) {
+//                    continue;
+//                }
+//
+//                distance = row.getPosition().distance(mouse.getX(), mouse.getY());
+//                if (distance < closestDistance) {
+//                    closestDistance = distance;
+//                    closestStock = row;
+//                }
+//            }
+//        }
+//        return closestStock;
+
 
     public void update() {
 
@@ -157,9 +201,13 @@ public class Gui extends Application {
         for (Foundation foundation : table.getFoundations()) {
             foundation.draw(graphics2D);
         }
+        if (!table.getPile().getCards().isEmpty()) table.getPile().getCards().peek().draw(graphics2D);
+        if (!table.getReserve().getCards().isEmpty()) table.getReserve().getCards().peek().draw(graphics2D);
         for (Card selectedCard : selectedCards) {
             selectedCard.draw(graphics2D);
         }
+
+
     }
 
     public static void main(String[] args) {

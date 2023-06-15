@@ -1,6 +1,7 @@
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Stack;
 
@@ -10,6 +11,7 @@ public class Table {
     private Pile reserve;              // pile of cards in reserve
     private Pile pile;               // pile of shown cards
     private Foundation[] foundations = new Foundation[4];  //piles where you finish
+    private ArrayList<Stock> allStocks = new ArrayList<>();
 
     public Table(BufferedImage[] cards, BufferedImage[] foundations) {
         generateCards(cards);
@@ -35,25 +37,30 @@ public class Table {
             System.out.println(card);
         }
     }
-    private void fillStocks(BufferedImage[] foundation){
+    private void fillStocks(BufferedImage[] foundationImage){
         Stack<Card> dealingDeck = new Stack<>();
         dealingDeck.addAll(deck);
         for (int i = 0; i < foundations.length; i++) {
-            foundations[i] = new Foundation(new Point2D.Double(800+i*150,50), new Stack<>(), Type.values()[i], foundation[i]);
+            foundations[i] = new Foundation(new Point2D.Double(580+i*150,50), new Stack<>(), Type.values()[i], foundationImage[i]);
         }
         for (int i = 0; i < rows.length; i++) {
             Stack<Card> cardStack = new Stack<>();
             cardStack.addAll(dealingDeck.subList(0,i+1));
             dealingDeck.subList(0,i+1).clear();
-            rows[i] = new Row(new Point2D.Float(110*i + 100,200 ),cardStack);
+            rows[i] = new Row(new Point2D.Float(130*i +250,250 ),cardStack);
         }
-        reserve = new Pile(new Point2D.Double(0,0),dealingDeck);
-        pile = new Pile(new Point2D.Double(110,0),new Stack<Card>());
+        reserve = new Pile(new Point2D.Double(250,50),dealingDeck);
+        pile = new Pile(new Point2D.Double(360,50),new Stack<Card>());
         System.out.println(deck.size());
+
+        allStocks.add(reserve);
+        allStocks.add(pile);
+        allStocks.addAll(Arrays.asList(rows));
+        allStocks.addAll(Arrays.asList(foundations));
     }
 
 
-
+    public ArrayList<Stock> getAllStocks(){ return allStocks;}
     public Stack<Card> getDeck() {
         return deck;
     }
@@ -62,7 +69,7 @@ public class Table {
         return rows;
     }
 
-    public Stock getStock() {
+    public Stock getReserve() {
         return reserve;
     }
 

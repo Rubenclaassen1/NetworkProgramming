@@ -1,6 +1,4 @@
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Queue;
 import java.util.Stack;
 
 
@@ -13,7 +11,8 @@ public abstract class Stock{
         this.stockCards = stockCards;
     }
 
-    public abstract boolean addCard(Stack<Card> card);
+    public abstract boolean addCard(Stack<Card> cards);
+    public abstract void resetCard(Stack<Card> cards);
 
 
 
@@ -24,9 +23,10 @@ public abstract class Stock{
 
     public Card removeCard() {
         return stockCards.pop();
+
     }
 
-    public Point2D getPostition() {
+    public Point2D getPosition() {
         return this.position;
     }
 
