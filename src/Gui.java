@@ -86,8 +86,10 @@ public class Gui extends Application {
             }else{
                 selectedCards.add(previousStock.getCards().pop());
             }
-            Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
-            Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
+            if(!selectedCards.isEmpty()) {
+                Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
+                Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
+            }
         }
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
 
