@@ -1,10 +1,11 @@
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.Collections;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class Pile extends Stock{
     public Pile(Point2D position, Stack<Card> stockCards) {
-
         super(position, stockCards);
         for (Card stockCard : stockCards) {
             stockCard.setPosition(position);
@@ -30,17 +31,12 @@ public class Pile extends Stock{
 
     @Override
     public void resetCard(Stack<Card> cards) {
-        for (Card card : cards) {
-            card.setPosition(super.getPosition());
-        }
-
-        super.getCards().addAll(cards);
+      cards.forEach(card -> card.setPosition(super.getPosition()));
+      super.getCards().addAll(cards);
     }
 
     public Stack<Card> reset(){
-        for (Card card : super.getCards()) {
-            card.setShowing(false);
-        }
+        super.getCards().forEach(card -> card.setShowing(false));
         Stack<Card> cardStack = new Stack<>();
         cardStack.addAll(super.getCards());
         super.getCards().clear();

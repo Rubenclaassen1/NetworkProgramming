@@ -73,7 +73,6 @@ public class Row extends Stock {
     public Card getSelectedCard(MouseEvent mouse) {
         Card selectedCard;
         if (mouse.getX() - super.getPosition().getX() < 150 && mouse.getX() - super.getPosition().getX() > 0) {
-
             int selectedIndex = (int) ((mouse.getY() - super.getPosition().getY()) / 50);
             if (selectedIndex >= super.getCards().size()){
                 selectedIndex = super.getCards().size()-1;

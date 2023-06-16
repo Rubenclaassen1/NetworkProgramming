@@ -1,9 +1,10 @@
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Stack;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 public class Table {
     private Stack<Card> deck;
@@ -13,7 +14,7 @@ public class Table {
     private Foundation[] foundations = new Foundation[4];  //piles where you finish
     private ArrayList<Stock> allStocks = new ArrayList<>();
 
-    public Table(BufferedImage[] cards, BufferedImage[] foundations) {
+    public Table(Queue<BufferedImage> cards, BufferedImage[] foundations) {
         generateCards(cards);
         shuffle();
         fillStocks(foundations);
@@ -24,18 +25,12 @@ public class Table {
         Collections.shuffle(deck);
     }
 
-    private void generateCards(BufferedImage[] cards) {
-        int counter = 0;
+    private void generateCards(Queue<BufferedImage> cards) {
         deck = new Stack<>();
-        for (int i = 0; i < 4; i++) {
-            for (int j = 1; j < 14; j++) {
-                deck.add(new Card(j, Type.values()[i], CardColor.values()[(i / 2)], false, null,cards[counter]));
-                counter++;
-            }
+        for (int i = 0; i < 52; i++) {
+            deck.add(new Card(i%13 +1, Type.values()[i/13], CardColor.values()[(i/13)/ 2], false, null, cards.poll()));
         }
-        for (Card card : deck) {
-            System.out.println(card);
-        }
+        deck.forEach(System.out::println);
     }
     private void fillStocks(BufferedImage[] foundationImage){
         Stack<Card> dealingDeck = new Stack<>();
@@ -44,7 +39,7 @@ public class Table {
             foundations[i] = new Foundation(new Point2D.Double(355+i*150,25), new Stack<>(), Type.values()[i], foundationImage[i]);
         }
         for (int i = 0; i < rows.length; i++) {
-            Stack<Card> cardStack = new Stack<>();
+            Stack<Card> cardStack = new Stack<Card>();
             cardStack.addAll(dealingDeck.subList(0,i+1));
             dealingDeck.subList(0,i+1).clear();
             rows[i] = new Row(new Point2D.Float(130*i +25,200 ),cardStack);
@@ -52,7 +47,6 @@ public class Table {
         reserve = new Pile(new Point2D.Double(25,25),dealingDeck);
         pile = new Pile(new Point2D.Double(155,25),new Stack<Card>());
         System.out.println(deck.size());
-
         allStocks.add(reserve);
         allStocks.add(pile);
         allStocks.addAll(Arrays.asList(rows));

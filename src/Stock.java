@@ -1,3 +1,5 @@
+import javafx.scene.input.MouseEvent;
+
 import java.awt.geom.Point2D;
 import java.util.Stack;
 
@@ -17,14 +19,28 @@ public abstract class Stock{
 
 
 
+
     public void setPosition(Point2D position) {
         this.position = position;
     }
 
     public Card removeCard() {
         return stockCards.pop();
-
     }
+    public boolean containsMouse(MouseEvent mouse){
+        if(getClass().equals(Row.class)){
+            return position.getX() < mouse.getX()
+                    && position.getX() + 100 > mouse.getX()
+                    && position.getY() < mouse.getY()
+                    && position.getY() + (stockCards.size()-1)*50+150 > mouse.getY();
+        }
+        return position.getX() < mouse.getX()
+                && position.getX() + 100 > mouse.getX()
+                && position.getY() < mouse.getY()
+                && position.getY() + 150 > mouse.getY();
+    }
+
+
 
     public Point2D getPosition() {
         return this.position;
