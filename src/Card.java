@@ -8,8 +8,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public class Card {
+public class Card implements Serializable {
     public final int CARD_WIDTH = 100;
     public final int CARD_HEIGHT = 150;
     private final int value;
@@ -17,18 +19,18 @@ public class Card {
     private final CardColor cardColor;
     private boolean showing;
     private Point2D position;
-    private BufferedImage cardImage;
+    private int imageIndex;
     private Point2D speed;
 
 
 
-    public Card(int value, Type type, CardColor cardColor, boolean showing, Point2D position, BufferedImage card) {
+    public Card(int value, Type type, CardColor cardColor, boolean showing, Point2D position, int imageIndex) {
         this.value = value;
         this.type = type;
         this.cardColor = cardColor;
         this.showing = showing;
         this.position = position;
-        this.cardImage = card;
+        this.imageIndex = imageIndex;
         this.speed = new Point2D.Double(Math.random()*10-5, 5);
     }
 
@@ -68,7 +70,7 @@ public class Card {
                 ", showing=" + showing +
                 '}';
     }
-    public void draw(FXGraphics2D graphics2D){
+    public void draw(FXGraphics2D graphics2D, ArrayList<BufferedImage> cardImages){
         AffineTransform fx = new AffineTransform();
         Shape card = new Rectangle2D.Double(position.getX(), position.getY(), 100, 150);
         if(!showing){
@@ -78,7 +80,7 @@ public class Card {
             graphics2D.setColor(Color.white);
             graphics2D.fill(card);
             fx.translate(position.getX(), position.getY());
-           graphics2D.drawImage(cardImage,fx,null);
+           graphics2D.drawImage(cardImages.get(imageIndex),fx,null);
         }
         graphics2D.setColor(Color.BLACK);
         graphics2D.draw(card);

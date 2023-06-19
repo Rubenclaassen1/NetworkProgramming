@@ -11,41 +11,81 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.sql.SQLOutput;
 import java.util.*;
 
 
 
 public class Gui extends Application {
-    private static Table table;
+    private Table table;
     private Canvas canvas;
     private boolean locked;
+    private ArrayList<BufferedImage> cardImages;
+    private BufferedImage[] foundationImages;
+
+    private ObjectInputStream reader;
+    private ObjectOutputStream writer;
 
 
     @Override
     public void start(Stage stage) throws Exception {
+        cardImages = loadImage();
+        foundationImages = loadFoundationImage();
         locked = false;
-        table = new Table(loadImage(), loadFoundationImage());
-        for (Row row : table.getRows()) {
-            System.out.println("Row " + ": " + row);
-        }
+//        table = new Table();
+//        for (Row row : table.getRows()) {
+//            System.out.println("Row " + ": " + row);
+//        }
         BorderPane mainPane = new BorderPane();
-        canvas = new ResizableCanvas(g -> draw(g), mainPane);
+        canvas = new ResizableCanvas(g ->draw(g), mainPane);
         mainPane.setCenter(canvas);
         stage.setMinWidth(945);
         stage.setMinHeight(930);
-
         canvas.setOnMousePressed(event -> onMousePressed(event));
-        canvas.setOnMouseReleased(event -> {if(previousStock != null && !selectedCards.isEmpty())onMouseRelease(event);});
+        canvas.setOnMouseReleased(event -> {if (previousStock != null && !selectedCards.isEmpty()) onMouseRelease(event);});
         canvas.setOnMouseDragged(event -> onMouseDrag(event));
 
 //        stage.setMaximized(true);
         stage.setScene(new Scene(mainPane));
         stage.setTitle("Solitaire");
+        Thread thread = new Thread(this::connection);
+        thread.start();
 
         stage.show();
 
     }
+    private void connection() {
 
+        try {
+            Socket socket = new Socket("localhost",8942);
+            writer = new ObjectOutputStream(socket.getOutputStream());
+            reader = new ObjectInputStream(socket.getInputStream());
+            Table serverTable = (Table) reader.readObject();
+            System.out.println("connection");
+            if(serverTable == null){
+                this.table = new Table();
+                Arrays.stream(table.getRows()).forEach(System.out::println);
+                writer.writeObject(table);
+                writer.flush();
+            }else{
+                this.table = serverTable;
+            }
+            draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+            while(socket.isConnected()){
+                table = (Table)reader.readObject();
+                draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
 
 
     private Stack<Card> selectedCards = new Stack<Card>();
@@ -55,7 +95,6 @@ public class Gui extends Application {
 
     private void onMouseDrag(MouseEvent mouse) {
         if(selectedCards.isEmpty()) return;
-
         selectedCards.forEach(card -> card.setPosition(new Point2D.Double(mouse.getX() - Xoffset, (mouse.getY() - Yoffset) + (50 * selectedCards.indexOf(card)))));
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
     }
@@ -70,6 +109,12 @@ public class Gui extends Application {
                 ((Row) previousStock).showLast();
         }
         selectedCards.clear();
+        try {
+            writer.writeObject(table);
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
         if (gameDone()){
             endSequence();
@@ -78,6 +123,7 @@ public class Gui extends Application {
 
 
     private void onMousePressed(MouseEvent mouse) {
+        System.out.println("click");
         if(!locked){
 
             previousStock = getClosestStock(mouse);
@@ -87,6 +133,13 @@ public class Gui extends Application {
                 }else {
                     table.getPile().addCard(table.getReserve().removeCard());
                 }
+                try {
+                    writer.writeObject(table);
+                    writer.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
             }else {
                 if(previousStock == null || previousStock.getCards().isEmpty()) {
                     return;
@@ -100,6 +153,7 @@ public class Gui extends Application {
                     Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
                     Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
                 }
+
             }
             draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
         }
@@ -168,7 +222,7 @@ public class Gui extends Application {
                 card.update();
                 spacing++;
                 if (spacing == 3) {
-                    card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+                    card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()),cardImages);
                     spacing = 0;
                 }
             } else {
@@ -178,8 +232,8 @@ public class Gui extends Application {
 
 
     }
-    private Queue<BufferedImage> loadImage() {
-        Queue<BufferedImage> cards = new LinkedList<>();
+    private ArrayList<BufferedImage> loadImage() {
+        ArrayList<BufferedImage> cards = new ArrayList<>();
 
         try {
             BufferedImage image = ImageIO.read(Objects.requireNonNull(getClass().getResource("playing_cards.png")));
@@ -209,23 +263,26 @@ public class Gui extends Application {
 
 
     public void draw(FXGraphics2D graphics2D) {
+        if(table == null){
+            return;
+        }
         graphics2D.setBackground(Color.decode("#006a12"));
         if (!locked){
             graphics2D.clearRect(0, 0, (int) canvas.getWidth(), (int) canvas.getHeight());
         }
         for (Row row : table.getRows()) {
             for (Card card : row.getCards()) {
-                card.draw(graphics2D);
+                card.draw(graphics2D,cardImages);
             }
         }
         for (Foundation foundation : table.getFoundations()) {
-            foundation.draw(graphics2D);
+            foundation.draw(graphics2D,foundationImages,cardImages);
         }
-        if (!table.getPile().getCards().isEmpty()) table.getPile().getCards().peek().draw(graphics2D);
-        if (!table.getReserve().getCards().isEmpty()) table.getReserve().getCards().peek().draw(graphics2D);
+        if (!table.getPile().getCards().isEmpty()) table.getPile().getCards().peek().draw(graphics2D,cardImages);
+        if (!table.getReserve().getCards().isEmpty()) table.getReserve().getCards().peek().draw(graphics2D,cardImages);
 
         for (Card selectedCard : selectedCards) {
-            selectedCard.draw(graphics2D);
+            selectedCard.draw(graphics2D,cardImages);
         }
 
 
