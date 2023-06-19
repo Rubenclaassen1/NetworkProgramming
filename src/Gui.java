@@ -132,28 +132,52 @@ public class Gui extends Application {
             public void handle(long now) {
                 if(last == -1)
                     last = now;
-                update((now - last) / 1000000000.0);
+                update();
                 last = now;
-                draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+//                draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
             }
         }.start();
+
+//        update();
 
         System.out.println("HAHAHAHAHAH");
     }
 
     private int counter = 12;
-    public void update(double deltaTime) {
+    private int spacing = 0;
+
+    public void update() {
+        Thread thread1 = new Thread(()-> animation(0));
+        Thread thread2 = new Thread(()-> animation(1));
+        Thread thread3 = new Thread(()-> animation(2));
+        Thread thread4 = new Thread(()-> animation(3));
+
+
+        thread1.start();
+        thread2.start();
+        thread3.start();
+        thread4.start();
+
+
+    }
+
+    private void animation(int i){
         if (counter >= 0) {
-            Card card = table.getFoundations()[1].getCards().get(counter);
-            if (card.getPosition().getY() < canvas.getHeight()){
+            Card card = table.getFoundations()[i].getCards().get(counter);
+            if (card.getPosition().getY() < canvas.getHeight()) {
                 card.update();
-                card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+                spacing++;
+                if (spacing == 3) {
+                    card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+                    spacing = 0;
+                }
             } else {
                 counter--;
             }
         }
-    }
 
+
+    }
     private Queue<BufferedImage> loadImage() {
         Queue<BufferedImage> cards = new LinkedList<>();
 

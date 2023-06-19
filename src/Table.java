@@ -15,10 +15,10 @@ public class Table {
     private ArrayList<Stock> allStocks = new ArrayList<>();
 
     public Table(Queue<BufferedImage> cards, BufferedImage[] foundations) {
-//        generateCards(cards);
-//        shuffle();
-//        fillStocks(foundations);
-        createEndingDeck(cards, foundations);
+        generateCards(cards);
+        shuffle();
+        fillStocks(foundations);
+//        createEndingDeck(cards, foundations);
 
     }
 
