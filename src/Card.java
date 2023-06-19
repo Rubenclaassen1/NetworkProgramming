@@ -1,4 +1,6 @@
 
+import javafx.animation.AnimationTimer;
+import javafx.scene.canvas.Canvas;
 import org.jfree.fx.FXGraphics2D;
 
 import java.awt.*;
@@ -16,6 +18,7 @@ public class Card {
     private boolean showing;
     private Point2D position;
     private BufferedImage cardImage;
+    private Point2D speed;
 
 
 
@@ -26,6 +29,7 @@ public class Card {
         this.showing = showing;
         this.position = position;
         this.cardImage = card;
+        this.speed = new Point2D.Double(Math.random()*10-5, 5);
     }
 
     public Point2D getPosition() {
@@ -78,7 +82,17 @@ public class Card {
         }
         graphics2D.setColor(Color.BLACK);
         graphics2D.draw(card);
+    }
 
+    public void update(){
+
+        this.position = new Point2D.Double(this.position.getX() + this.speed.getX(), this.position.getY() + this.speed.getY());
+    }
+
+    public void animation(Canvas canvas){
+        while (this.position.getY() < canvas.getHeight()){
+            update();
+        }
     }
 }
 enum Type{

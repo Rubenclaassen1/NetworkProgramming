@@ -1,3 +1,4 @@
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -17,10 +18,12 @@ import java.util.*;
 public class Gui extends Application {
     private static Table table;
     private Canvas canvas;
+    private boolean locked;
 
 
     @Override
     public void start(Stage stage) throws Exception {
+        locked = false;
         table = new Table(loadImage(), loadFoundationImage());
         for (Row row : table.getRows()) {
             System.out.println("Row " + ": " + row);
@@ -30,9 +33,11 @@ public class Gui extends Application {
         mainPane.setCenter(canvas);
         stage.setMinWidth(945);
         stage.setMinHeight(930);
+
         canvas.setOnMousePressed(event -> onMousePressed(event));
         canvas.setOnMouseReleased(event -> {if(previousStock != null && !selectedCards.isEmpty())onMouseRelease(event);});
         canvas.setOnMouseDragged(event -> onMouseDrag(event));
+
 //        stage.setMaximized(true);
         stage.setScene(new Scene(mainPane));
         stage.setTitle("Solitaire");
@@ -50,7 +55,7 @@ public class Gui extends Application {
 
     private void onMouseDrag(MouseEvent mouse) {
         if(selectedCards.isEmpty()) return;
-        // System.out.println("Kanker");
+
         selectedCards.forEach(card -> card.setPosition(new Point2D.Double(mouse.getX() - Xoffset, (mouse.getY() - Yoffset) + (50 * selectedCards.indexOf(card)))));
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
     }
@@ -66,32 +71,38 @@ public class Gui extends Application {
         }
         selectedCards.clear();
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+        if (gameDone()){
+            endSequence();
+        }
     }
 
 
     private void onMousePressed(MouseEvent mouse) {
-        previousStock = getClosestStock(mouse);
-        if (previousStock == table.getReserve()) {
-            if(table.getReserve().getCards().isEmpty()){
-                table.getReserve().resetCard(table.getPile().reset());
+        if(!locked){
+
+            previousStock = getClosestStock(mouse);
+            if (previousStock == table.getReserve()) {
+                if(table.getReserve().getCards().isEmpty()){
+                    table.getReserve().resetCard(table.getPile().reset());
+                }else {
+                    table.getPile().addCard(table.getReserve().removeCard());
+                }
             }else {
-                table.getPile().addCard(table.getReserve().removeCard());
+                if(previousStock == null || previousStock.getCards().isEmpty()) {
+                    return;
+                }
+                if (previousStock.getClass().equals(Row.class)) {
+                    selectedCards = ((Row)previousStock).removeCard(((Row)previousStock).getSelectedCard(mouse));
+                }else{
+                    selectedCards.add(previousStock.getCards().pop());
+                }
+                if(!selectedCards.isEmpty()) {
+                    Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
+                    Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
+                }
             }
-        }else {
-            if(previousStock == null || previousStock.getCards().isEmpty()) {
-                return;
-            }
-            if (previousStock.getClass().equals(Row.class)) {
-                selectedCards = ((Row)previousStock).removeCard(((Row)previousStock).getSelectedCard(mouse));
-            }else{
-                selectedCards.add(previousStock.getCards().pop());
-            }
-            if(!selectedCards.isEmpty()) {
-                Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
-                Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
-            }
+            draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
         }
-        draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
 
     }
 
@@ -99,9 +110,48 @@ public class Gui extends Application {
         return table.getAllStocks().stream().filter(stock -> stock.containsMouse(mouse)).findAny().orElse(null);
     }
 
+    public boolean gameDone(){
+        int counter = 0;
+        for (Foundation foundation : table.getFoundations()) {
+            if (foundation.isFull()){
+                counter++;
+            }
+        }
+        if (counter == table.getFoundations().length){
+            locked = true;
+            return true;
 
+        }
+        return false;
+    }
 
-    public void update() {
+    private void endSequence() {
+        new AnimationTimer() {
+            long last = -1;
+            @Override
+            public void handle(long now) {
+                if(last == -1)
+                    last = now;
+                update((now - last) / 1000000000.0);
+                last = now;
+                draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+            }
+        }.start();
+
+        System.out.println("HAHAHAHAHAH");
+    }
+
+    private int counter = 12;
+    public void update(double deltaTime) {
+        if (counter >= 0) {
+            Card card = table.getFoundations()[1].getCards().get(counter);
+            if (card.getPosition().getY() < canvas.getHeight()){
+                card.update();
+                card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+            } else {
+                counter--;
+            }
+        }
     }
 
     private Queue<BufferedImage> loadImage() {
@@ -136,7 +186,9 @@ public class Gui extends Application {
 
     public void draw(FXGraphics2D graphics2D) {
         graphics2D.setBackground(Color.decode("#006a12"));
-        graphics2D.clearRect(0, 0, (int) canvas.getWidth(), (int) canvas.getHeight());
+        if (!locked){
+            graphics2D.clearRect(0, 0, (int) canvas.getWidth(), (int) canvas.getHeight());
+        }
         for (Row row : table.getRows()) {
             for (Card card : row.getCards()) {
                 card.draw(graphics2D);

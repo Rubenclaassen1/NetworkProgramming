@@ -14,6 +14,10 @@ public class Foundation extends Stock {
         super(position, stockCards);
         this.type = type;
         this.foundation = foundation;
+        for (Card stockCard : stockCards) {
+            stockCard.setPosition(position);
+            stockCard.setShowing(true);
+        }
 
     }
 
@@ -59,5 +63,9 @@ public class Foundation extends Stock {
             super.getCards().get(stacksize-1).draw(graphics2D);
         }
 
+    }
+
+    public boolean isFull(){
+        return super.getCards().size() == 13;
     }
 }
