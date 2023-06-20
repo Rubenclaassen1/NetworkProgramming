@@ -1,7 +1,7 @@
 public class Main {
     private static Table table;
     public static void main(String[] args) {
-        table = new Table(null, null);
+        table = new Table();
 
         System.out.println("Stock: " + table.getReserve());
         System.out.println("Pile: " + table.getPile());

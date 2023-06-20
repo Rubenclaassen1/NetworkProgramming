@@ -3,17 +3,18 @@ import org.jfree.fx.FXGraphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class Foundation extends Stock {
     private Type type;
-    private BufferedImage foundation;
+    private int imageIndex;
 
 
-    public Foundation(Point2D position, Stack<Card> stockCards, Type type, BufferedImage foundation) {
+    public Foundation(Point2D position, Stack<Card> stockCards, Type type, int imageIndex ) {
         super(position, stockCards);
         this.type = type;
-        this.foundation = foundation;
+        this.imageIndex = imageIndex;
         for (Card stockCard : stockCards) {
             stockCard.setPosition(position);
             stockCard.setShowing(true);
@@ -49,18 +50,18 @@ public class Foundation extends Stock {
                 '}';
     }
 
-    public void draw(FXGraphics2D graphics2D) {
+    public void draw(FXGraphics2D graphics2D, BufferedImage[] foundationImages, ArrayList<BufferedImage> cardImages) {
         int stacksize = super.getCards().size();
         if (super.getCards().isEmpty()) {
             AffineTransform fx = new AffineTransform();
             fx.translate(super.getPosition().getX(), super.getPosition().getY());
-            graphics2D.drawImage(foundation, fx, null);
+            graphics2D.drawImage(foundationImages[imageIndex], fx, null);
         } else if (stacksize >= 2) {
-            super.getCards().get(stacksize - 2).draw(graphics2D);
-            super.getCards().get(stacksize-1).draw(graphics2D);
+            super.getCards().get(stacksize - 2).draw(graphics2D,cardImages);
+            super.getCards().get(stacksize-1).draw(graphics2D,cardImages);
 
         } else {
-            super.getCards().get(stacksize-1).draw(graphics2D);
+            super.getCards().get(stacksize-1).draw(graphics2D,cardImages);
         }
 
     }

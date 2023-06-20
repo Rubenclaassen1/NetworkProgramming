@@ -1,10 +1,11 @@
 import javafx.scene.input.MouseEvent;
 
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.Stack;
 
 
-public abstract class Stock{
+public abstract class Stock implements Serializable {
     private Point2D position;
     private Stack<Card> stockCards;
 

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-public class Pile extends Stock{
+public class Pile extends Stock {
     public Pile(Point2D position, Stack<Card> stockCards) {
         super(position, stockCards);
         for (Card stockCard : stockCards) {

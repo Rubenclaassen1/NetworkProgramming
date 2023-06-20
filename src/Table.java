@@ -2,24 +2,35 @@ import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class Table {
+public class Table implements Serializable {
     private Stack<Card> deck;
     private Row[] rows = new Row[7]; //rows of cards
     private Pile reserve;              // pile of cards in reserve
     private Pile pile;               // pile of shown cards
+    private Boolean hasSelectedCards = false;
+    private Stack<Card> selectedCards = new Stack<>();
     private Foundation[] foundations = new Foundation[4];  //piles where you finish
     private ArrayList<Stock> allStocks = new ArrayList<>();
 
-    public Table(Queue<BufferedImage> cards, BufferedImage[] foundations) {
-//        generateCards(cards);
-//        shuffle();
-//        fillStocks(foundations);
-        createEndingDeck(cards, foundations);
+    public Table() {
+        generateCards();
+        shuffle();
+        fillStocks();
+//       createEndingDeck(cards, foundations);
 
+    }
+
+    public Stack<Card> getSelectedCards() {
+        return selectedCards;
+    }
+
+    public void setSelectedCards(Stack<Card> selectedCards) {
+        this.selectedCards = selectedCards;
     }
 
     private void reverse(){
@@ -29,18 +40,18 @@ public class Table {
         Collections.shuffle(deck);
     }
 
-    private void generateCards(Queue<BufferedImage> cards) {
+    private void generateCards() {
         deck = new Stack<>();
         for (int i = 0; i < 52; i++) {
-            deck.add(new Card(i%13 +1, Type.values()[i/13], CardColor.values()[(i/13)/ 2], false, null, cards.poll()));
+            deck.add(new Card(i%13 +1, Type.values()[i/13], CardColor.values()[(i/13)/ 2], false, null, i));
         }
         deck.forEach(System.out::println);
     }
-    private void fillStocks(BufferedImage[] foundationImage){
+    private void fillStocks(){
         Stack<Card> dealingDeck = new Stack<>();
         dealingDeck.addAll(deck);
         for (int i = 0; i < foundations.length; i++) {
-            foundations[i] = new Foundation(new Point2D.Double(355+i*150,25), new Stack<>(), Type.values()[i], foundationImage[i]);
+            foundations[i] = new Foundation(new Point2D.Double(355+i*150,25), new Stack<>(), Type.values()[i], i);
         }
         for (int i = 0; i < rows.length; i++) {
             Stack<Card> cardStack = new Stack<Card>();
@@ -57,15 +68,15 @@ public class Table {
         allStocks.addAll(Arrays.asList(foundations));
     }
 
-    private void createEndingDeck(Queue<BufferedImage> cards, BufferedImage[] foundationImage){
-        generateCards(cards);
+    private void createEndingDeck(){
+        generateCards();
         Stack<Card> dealingDeck = new Stack<>();
         dealingDeck.addAll(deck);
         for (int i = 0; i < 3; i++) {
             Stack<Card> cardStack = new Stack<>();
             cardStack.addAll(dealingDeck.subList(0,13));
             dealingDeck.subList(0,13).clear();
-            foundations[i] = new Foundation(new Point2D.Double(355+i*150,25), cardStack, Type.values()[i], foundationImage[i]);
+            foundations[i] = new Foundation(new Point2D.Double(355+i*150,25), cardStack, Type.values()[i], i);
         }
 
 
@@ -73,7 +84,7 @@ public class Table {
         Stack<Card> foundationStack = new Stack<>();
         foundationStack.addAll(dealingDeck.subList(0,12));
         dealingDeck.subList(0,12).clear();
-        foundations[3] = new Foundation(new Point2D.Double(355+3*150,25), foundationStack, Type.values()[3], foundationImage[3]);
+        foundations[3] = new Foundation(new Point2D.Double(355+3*150,25), foundationStack, Type.values()[3], 3);
 
         rows[0]  = new Row(new Point2D.Float(130*0 +25,200 ),dealingDeck);
 
@@ -111,5 +122,13 @@ public class Table {
 
     public Foundation[] getFoundations() {
         return foundations;
+    }
+
+    public Boolean getHasSelectedCards() {
+        return hasSelectedCards;
+    }
+
+    public void setHasSelectedCards(Boolean hasSelectedCards) {
+        this.hasSelectedCards = hasSelectedCards;
     }
 }
