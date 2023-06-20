@@ -139,9 +139,9 @@ public class Gui extends Application {
                 } else {
                     table.getPile().addCard(table.getReserve().removeCard());
                 }
+                writeTable();
             }
             else{
-                writeTable();
                 if (previousStock == null || previousStock.getCards().isEmpty()) {
                     return;
                 }
