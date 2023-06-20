@@ -12,7 +12,7 @@ public class Table implements Serializable {
     private Row[] rows = new Row[7]; //rows of cards
     private Pile reserve;              // pile of cards in reserve
     private Pile pile;               // pile of shown cards
-    private Boolean hasSelectedCards;
+    private Boolean hasSelectedCards = false;
     private Stack<Card> selectedCards = new Stack<>();
     private Foundation[] foundations = new Foundation[4];  //piles where you finish
     private ArrayList<Stock> allStocks = new ArrayList<>();

@@ -61,7 +61,7 @@ public class Gui extends Application {
     private void connection() {
 
         try {
-            Socket socket = new Socket("localhost", 1337);
+            Socket socket = new Socket("26.159.100.51", 1337);
             writer = new ObjectOutputStream(socket.getOutputStream());
             reader = new ObjectInputStream(socket.getInputStream());
             Table serverTable = (Table) reader.readObject();
@@ -120,6 +120,7 @@ public class Gui extends Application {
 
         selectedCards.clear();
         table.setHasSelectedCards(false);
+        System.out.println("FALSE");
         writeTable();
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
         if (gameDone()){
@@ -130,8 +131,7 @@ public class Gui extends Application {
 
     private void onMousePressed(MouseEvent mouse) {
         System.out.println("click");
-        if(!locked|| !table.getHasSelectedCards()){
-            table.setHasSelectedCards(true);
+        if(!locked && !table.getHasSelectedCards()){
             previousStock = getClosestStock(mouse);
             if (previousStock == table.getReserve()) {
                 if (table.getReserve().getCards().isEmpty()) {
@@ -139,14 +139,14 @@ public class Gui extends Application {
                 } else {
                     table.getPile().addCard(table.getReserve().removeCard());
                 }
-            writeTable();
-
             }
             else{
                 writeTable();
                 if (previousStock == null || previousStock.getCards().isEmpty()) {
                     return;
                 }
+                table.setHasSelectedCards(true);
+                writeTable();
 
                 if (previousStock.getClass().equals(Row.class)) {
                     selectedCards = ((Row) previousStock).removeCard(((Row) previousStock).getSelectedCard(mouse));
@@ -159,7 +159,6 @@ public class Gui extends Application {
                     Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
                 }
             }
-
 
         }
 
