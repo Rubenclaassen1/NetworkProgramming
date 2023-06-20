@@ -12,7 +12,7 @@ public class Server {
     public static void main(String[] args) throws IOException {
 
         Socket socket;
-        ServerSocket serverSocket = new ServerSocket(8942);
+        ServerSocket serverSocket = new ServerSocket(1337);
         while(true) {
             socket = serverSocket.accept();
             System.out.println("a client has connected");

@@ -61,7 +61,7 @@ public class Gui extends Application {
     private void connection() {
 
         try {
-            Socket socket = new Socket("localhost",8942);
+            Socket socket = new Socket("145.49.52.221",1337);
             writer = new ObjectOutputStream(socket.getOutputStream());
             reader = new ObjectInputStream(socket.getInputStream());
             Table serverTable = (Table) reader.readObject();
@@ -109,6 +109,7 @@ public class Gui extends Application {
                 ((Row) previousStock).showLast();
         }
         selectedCards.clear();
+        table.setHasSelectedCards(false);
         try {
             writer.writeObject(table);
             writer.flush();
@@ -124,41 +125,42 @@ public class Gui extends Application {
 
     private void onMousePressed(MouseEvent mouse) {
         System.out.println("click");
-        if(!locked){
-
+        if(!locked|| !table.getHasSelectedCards()){
+            table.setHasSelectedCards(true);
             previousStock = getClosestStock(mouse);
             if (previousStock == table.getReserve()) {
-                if(table.getReserve().getCards().isEmpty()){
+                if (table.getReserve().getCards().isEmpty()) {
                     table.getReserve().resetCard(table.getPile().reset());
-                }else {
+                } else {
                     table.getPile().addCard(table.getReserve().removeCard());
                 }
-                try {
-                    writer.writeObject(table);
-                    writer.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            }
+            try {
+                writer.writeObject(table);
+                writer.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-            }else {
-                if(previousStock == null || previousStock.getCards().isEmpty()) {
-                    return;
-                }
-                if (previousStock.getClass().equals(Row.class)) {
-                    selectedCards = ((Row)previousStock).removeCard(((Row)previousStock).getSelectedCard(mouse));
-                }else{
-                    selectedCards.add(previousStock.getCards().pop());
-                }
-                if(!selectedCards.isEmpty()) {
-                    Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
-                    Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
-                }
+            if (previousStock == null || previousStock.getCards().isEmpty()) {
+                return;
+            }
+
+            if (previousStock.getClass().equals(Row.class)) {
+                selectedCards = ((Row) previousStock).removeCard(((Row) previousStock).getSelectedCard(mouse));
+            } else if(previousStock != table.getReserve()) {
+                selectedCards.add(previousStock.getCards().pop());
+            }
+            if (!selectedCards.isEmpty()) {
+                Xoffset = mouse.getX() - selectedCards.firstElement().getPosition().getX();
+                Yoffset = mouse.getY() - selectedCards.firstElement().getPosition().getY();
+            }
 
             }
             draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
-        }
-
     }
+
+
 
     private Stock getClosestStock(MouseEvent mouse) {
         return table.getAllStocks().stream().filter(stock -> stock.containsMouse(mouse)).findAny().orElse(null);
