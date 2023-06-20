@@ -113,7 +113,7 @@ public class Gui extends Application {
         Stock closestStock = getClosestStock(mouse);
 
         if ( closestStock == null || closestStock.getClass().equals(Pile.class)||!closestStock.addCard(selectedCards)) {
-
+            previousStock.resetCard(selectedCards);
         } else if (previousStock.getClass().equals(Row.class)) {
                 ((Row) previousStock).showLast();
         }
