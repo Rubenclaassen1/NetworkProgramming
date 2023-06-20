@@ -76,6 +76,14 @@ public class Gui extends Application {
         }
     }
 
+    private void drawCards(){
+
+        for (Card card : table.getDeck())
+        {
+            card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+        }
+    }
+
 
     private void onMousePressed(MouseEvent mouse) {
         if(!locked){
@@ -134,6 +142,11 @@ public class Gui extends Application {
                     last = now;
                 update();
                 last = now;
+                spacing++;
+                if (spacing == 3) {
+                    drawCards();
+                    spacing = 0;
+                }
 //                draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
             }
         }.start();
@@ -166,11 +179,7 @@ public class Gui extends Application {
             Card card = table.getFoundations()[i].getCards().get(counter);
             if (card.getPosition().getY() < canvas.getHeight()) {
                 card.update();
-                spacing++;
-                if (spacing == 3) {
-                    card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
-                    spacing = 0;
-                }
+
             } else {
                 counter--;
             }
