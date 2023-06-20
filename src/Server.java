@@ -26,7 +26,6 @@ public class Server {
 
     public static void send(Table table){
         serverTable = table;
-        Arrays.stream(table.getRows()).forEach(System.out::println);
         for (ClientHandler clientHandler : clientHandlers) {
              clientHandler.write(serverTable);
 
@@ -36,7 +35,6 @@ public class Server {
        serverTable = table;
         for (ClientHandler clientHandler : clientHandlers) {
             if(clientHandler.equals(client)) {
-                Arrays.stream(table.getRows()).forEach(System.out::println);
                 continue;
             }
             clientHandler.write(table);

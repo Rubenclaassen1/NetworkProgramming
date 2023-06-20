@@ -63,7 +63,6 @@ public class Gui extends Application {
             System.out.println("connection established");
             if (serverTable == null) {
                 this.table = new Table();
-                Arrays.stream(table.getRows()).forEach(System.out::println);
                 writer.writeObject(table);
                 writer.flush();
             } else {
