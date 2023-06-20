@@ -65,10 +65,7 @@ public class Foundation extends Stock {
 
     }
 
-    public void animationDraw(FXGraphics2D graphics2D){
-        
     }
-
     public boolean isFull(){
         return super.getCards().size() == 13;
     }

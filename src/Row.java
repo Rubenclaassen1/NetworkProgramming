@@ -20,10 +20,6 @@ public class Row extends Stock {
     }
 
 
-//    public void generateRow(Card card){
-//        super.getCards().add(card);
-//    }
-
 
     public boolean addCard(Stack<Card> stackCards) {
         Card firstCard = stackCards.firstElement();
@@ -64,8 +60,7 @@ public class Row extends Stock {
 
         }
         return cardStack;
-//        System.out.println("no cards shown");
-//        return null;
+
 
     }
     public void showLast(){

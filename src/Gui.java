@@ -38,9 +38,8 @@ public class Gui extends Application {
         canvas.setOnMouseReleased(event -> {if(previousStock != null && !selectedCards.isEmpty())onMouseRelease(event);});
         canvas.setOnMouseDragged(event -> onMouseDrag(event));
 
-//        stage.setMaximized(true);
         stage.setScene(new Scene(mainPane));
-        stage.setTitle("Solitaire");
+        stage.setTitle("Multitaire");
 
         stage.show();
 
@@ -133,33 +132,7 @@ public class Gui extends Application {
         return false;
     }
 
-    private void endSequence() {
-        new AnimationTimer() {
-            long last = -1;
-            @Override
-            public void handle(long now) {
-                if(last == -1)
-                    last = now;
-                update();
-                last = now;
-                spacing++;
-                if (spacing == 3) {
-                    drawCards();
-                    spacing = 0;
-                }
-//                draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
-            }
-        }.start();
-
-//        update();
-
-        System.out.println("HAHAHAHAHAH");
-    }
-
-    private int counter = 12;
-    private int spacing = 0;
-
-    public void update() {
+    private void endSequence() {                //Start threads and a timer to draw cards
         Thread thread1 = new Thread(()-> animation(0));
         Thread thread2 = new Thread(()-> animation(1));
         Thread thread3 = new Thread(()-> animation(2));
@@ -170,18 +143,43 @@ public class Gui extends Application {
         thread2.start();
         thread3.start();
         thread4.start();
+        new AnimationTimer() {
+            long last = -1;
+            @Override
+            public void handle(long now) {
 
+
+                last = now;
+//                draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+            }
+        }.start();
 
     }
 
-    private void animation(int i){
-        if (counter >= 0) {
-            Card card = table.getFoundations()[i].getCards().get(counter);
+    private int spacing = 0;
+
+    public void update() {
+
+    }
+
+    private void animation(int i){                                 // End animation for foundation
+        while (!table.getFoundations()[i].getCards().isEmpty()) {
+            Card card = table.getFoundations()[i].getCards().get(table.getFoundations()[i].getCards().size()-1);
             if (card.getPosition().getY() < canvas.getHeight()) {
                 card.update();
-
+                spacing++;
+                if (spacing == 3) {
+                    card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+                    spacing = 0;
+                }
             } else {
-                counter--;
+
+                table.getFoundations()[i].getCards().pop();
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
 

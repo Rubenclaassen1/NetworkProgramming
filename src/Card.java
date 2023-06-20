@@ -89,11 +89,6 @@ public class Card {
         this.position = new Point2D.Double(this.position.getX() + this.speed.getX(), this.position.getY() + this.speed.getY());
     }
 
-    public void animation(Canvas canvas){
-        while (this.position.getY() < canvas.getHeight()){
-            update();
-        }
-    }
 }
 enum Type{
 
