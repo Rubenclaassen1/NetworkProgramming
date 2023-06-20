@@ -45,7 +45,6 @@ public class Table implements Serializable {
         for (int i = 0; i < 52; i++) {
             deck.add(new Card(i%13 +1, Type.values()[i/13], CardColor.values()[(i/13)/ 2], false, null, i));
         }
-        deck.forEach(System.out::println);
     }
     private void fillStocks(){
         Stack<Card> dealingDeck = new Stack<>();

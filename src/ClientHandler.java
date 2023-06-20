@@ -32,9 +32,7 @@ public class ClientHandler {
 
             while (socket.isConnected()) {
                 Table table = (Table) reader.readObject();
-                Arrays.stream(table.getRows()).forEach(System.out::println);
                 if (table != null) {
-//                    Server.send(table);
                     Server.sendAllOthers(table, this);
 
                 }
