@@ -16,7 +16,8 @@ public class Server {
         while(true) {
             socket = serverSocket.accept();
             System.out.println("a client has connected");
-            ClientHandler client = new ClientHandler(socket);
+            System.out.println("new client id:" + clientHandlers.size());
+            ClientHandler client = new ClientHandler(socket,clientHandlers.size());
             client.write(serverTable);
             clientHandlers.add(client);
         }
@@ -31,8 +32,21 @@ public class Server {
 
         }
     }
+    public static void sendAllOthers(Table table, ClientHandler client){
+       serverTable = table;
+        for (ClientHandler clientHandler : clientHandlers) {
+            if(clientHandler.equals(client)) {
+                Arrays.stream(table.getRows()).forEach(System.out::println);
+                continue;
+            }
+            clientHandler.write(table);
+
+        }
+
+    }
     public static void removeClient(ClientHandler client){
         clientHandlers.remove(client);
+
         if (clientHandlers.isEmpty()){
             serverTable = null;
         }
