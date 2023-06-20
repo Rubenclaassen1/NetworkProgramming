@@ -66,8 +66,8 @@ public class Foundation extends Stock {
 
     }
 
-    public void drawEnd(FXGraphics2D graphics2D){
-        super.getCards().get(super.getCards().size()-1).draw(graphics2D);
+    public void drawEnd(FXGraphics2D graphics2D,ArrayList<BufferedImage> cardImages){
+        super.getCards().get(super.getCards().size()-1).draw(graphics2D,cardImages);
     }
 
 

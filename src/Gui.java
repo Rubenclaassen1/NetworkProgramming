@@ -206,7 +206,7 @@ public class Gui extends Application {
                 if (spacing == 3) {
                     for (Foundation foundation : table.getFoundations()) {
                         if(!foundation.getCards().isEmpty()){
-                            foundation.drawEnd(new FXGraphics2D(canvas.getGraphicsContext2D()));
+                            foundation.drawEnd(new FXGraphics2D(canvas.getGraphicsContext2D()),cardImages);
                         }
                     }
                     spacing = 0;
