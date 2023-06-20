@@ -66,20 +66,12 @@ public class Gui extends Application {
             System.out.println("return card to previous");
             previousStock.resetCard(selectedCards);
         } else if (previousStock.getClass().equals(Row.class)) {
-                ((Row) previousStock).showLast();
+            ((Row) previousStock).showLast();
         }
         selectedCards.clear();
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
         if (gameDone()){
             endSequence();
-        }
-    }
-
-    private void drawCards(){
-
-        for (Card card : table.getDeck())
-        {
-            card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
         }
     }
 
@@ -150,7 +142,16 @@ public class Gui extends Application {
 
 
                 last = now;
-//                draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
+                spacing++;
+                if (spacing == 3) {
+                    for (Foundation foundation : table.getFoundations()) {
+                        if(!foundation.getCards().isEmpty()){
+                            foundation.drawEnd(new FXGraphics2D(canvas.getGraphicsContext2D()));
+                        }
+                    }
+                    spacing = 0;
+                }
+
             }
         }.start();
 
@@ -167,11 +168,6 @@ public class Gui extends Application {
             Card card = table.getFoundations()[i].getCards().get(table.getFoundations()[i].getCards().size()-1);
             if (card.getPosition().getY() < canvas.getHeight()) {
                 card.update();
-                spacing++;
-                if (spacing == 3) {
-                    card.draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
-                    spacing = 0;
-                }
             } else {
 
                 table.getFoundations()[i].getCards().pop();
