@@ -21,7 +21,7 @@ public class Table implements Serializable {
         generateCards();
         shuffle();
         fillStocks();
-//       createEndingDeck(cards, foundations);
+//       createEndingDeck();
 
     }
 
@@ -61,7 +61,6 @@ public class Table implements Serializable {
         }
         reserve = new Pile(new Point2D.Double(25,25),dealingDeck);
         pile = new Pile(new Point2D.Double(155,25),new Stack<Card>());
-        System.out.println(deck.size());
         allStocks.add(reserve);
         allStocks.add(pile);
         allStocks.addAll(Arrays.asList(rows));
@@ -93,7 +92,6 @@ public class Table implements Serializable {
         }
         reserve = new Pile(new Point2D.Double(25,25),new Stack<Card>());
         pile = new Pile(new Point2D.Double(155,25),new Stack<Card>());
-        System.out.println(deck.size());
         allStocks.add(reserve);
         allStocks.add(pile);
         allStocks.addAll(Arrays.asList(rows));

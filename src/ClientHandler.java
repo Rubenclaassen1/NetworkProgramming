@@ -19,7 +19,6 @@ public class ClientHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("clienthandler");
         Thread thread = new Thread(this::recieve);
         thread.start();
 

@@ -54,8 +54,6 @@ public class Row extends Stock {
         Stack<Card> cardStack = new Stack<>();
         if(card.isShowing()){
             cardStack.addAll(super.getCards().subList( super.getCards().size()-super.getCards().search(card),super.getCards().size()));
-            System.out.println(super.getCards().search(card));
-            System.out.println(cardStack);
             super.getCards().subList( super.getCards().size()-super.getCards().search(card),super.getCards().size()).clear();
 
         }

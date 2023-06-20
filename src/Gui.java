@@ -36,10 +36,7 @@ public class Gui extends Application {
         cardImages = loadImage();
         foundationImages = loadFoundationImage();
         locked = false;
-//        table = new Table();
-//        for (Row row : table.getRows()) {
-//            System.out.println("Row " + ": " + row);
-//        }
+
         BorderPane mainPane = new BorderPane();
         canvas = new ResizableCanvas(g ->draw(g), mainPane);
         mainPane.setCenter(canvas);
@@ -63,7 +60,7 @@ public class Gui extends Application {
             writer = new ObjectOutputStream(socket.getOutputStream());
             reader = new ObjectInputStream(socket.getInputStream());
             Table serverTable = (Table) reader.readObject();
-            System.out.println("connection");
+            System.out.println("connection established");
             if (serverTable == null) {
                 this.table = new Table();
                 Arrays.stream(table.getRows()).forEach(System.out::println);
@@ -75,7 +72,7 @@ public class Gui extends Application {
             draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
             while (socket.isConnected()) {
                 table = (Table) reader.readObject();
-                System.out.println("recieved a table");
+
                 draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
 
             }
@@ -118,7 +115,6 @@ public class Gui extends Application {
 
         selectedCards.clear();
         table.setHasSelectedCards(false);
-        System.out.println("FALSE");
         writeTable();
         draw(new FXGraphics2D(canvas.getGraphicsContext2D()));
         if (gameDone()){
@@ -128,7 +124,6 @@ public class Gui extends Application {
 
 
     private void onMousePressed(MouseEvent mouse) {
-        System.out.println("click");
         if(!locked && !table.getHasSelectedCards()){
             previousStock = getClosestStock(mouse);
             if (previousStock == table.getReserve()) {
